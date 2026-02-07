@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JWT Test</title>
+
+    <style>
+        input {
+            padding: 12px;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        async function signUp(){
+            const userName = document.getElementById("userName").value;
+            const userPassword = document.getElementById("userPassword").value;
+            const response = await axios.post("http://localhost:3000/signup", 
+            {
+                username: userName,
+                password: userPassword
+            })
+            // alert(response + " Sign up successfully");
+            console.log(response)
+        }
+
+        async function signIn(){
+            const userName = document.getElementById("loginUserName").value;
+            const userPassword = document.getElementById("loginPassword").value;
+            const response = await axios.post("http://localhost:3000/signIn", 
+            {
+                username: userName,
+                password: userPassword
+            })
+            // alert(response + " Sign up successfully");
+            console.log(response);
+            localStorage.setItem("authorization", response.data.token);
+            console.log("Sign in successfully");
+        }
+
+        function logout() {
+            localStorage.removeItem("authorization");
+            console.log("Loggedout successfully");
+        }
+
+        async function getUserInformaton() {
+            const token = localStorage.getItem("authorization");
+            if(token) {
+                const response = await axios.get("http://localhost:3000/contact", {
+                    headers: {
+                        authorization: token
+                    }
+                })
+
+                document.getElementById("information").innerHTML = response.data.username;
+            }
+        }
+
+        
+
+    </script>
+</head>
+
+<body style="font-size: 16px;">
+    <div style="max-width: 800px; margin: 0 auto;">
+        <button onclick="logout()">Logout</button>
+
+        <h2>Sign up</h2>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+            <input type="text" name="username" placeholder="Enter username" id="userName">
+            <input type="password" name="password" placeholder="Enter password" id="userPassword">
+            <button onclick="signUp()">Submit</button>
+        </div>
+
+        <br>
+
+        <h2>Sign in</h2>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+            <input type="text" name="username" placeholder="Enter username" id="loginUserName">
+            <input type="password" name="password" placeholder="Enter password" id="loginPassword">
+            <button onclick="signIn()">Submit</button>
+        </div>
+
+        <button onclick="getUserInformaton()">Get user info</button>
+
+        <div id="information"></div>
+    </div>
+</body>
+
+</html>
